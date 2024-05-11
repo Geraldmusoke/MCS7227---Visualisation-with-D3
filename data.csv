@@ -1,0 +1,13 @@
+Computing_platform,Storage,Number_of_nodes,Operating_Country,Latitude,Longitude
+VAS NOC,2000,40,South Africa,25.7469,28.1881
+SMS Center,1000,25,Ghana,5.6037,0.187
+Voice Char.,780,14,Zambia,15.3875,28.3228
+VAS Apps,500,20,Uganda,0.3476,32.5825
+MOMO,500,150,Uganda,0.3476,32.5825
+DMS,500,32,Rwanda,1.9536,30.0606
+IN/VAS ,500,32,Nigeria,9.0579,7.4951
+USSD ,320,8,Nigeria,9.0579,7.4951
+Load Bal.,100,25,Rwanda,1.9536,30.0606
+SDP,86,20,Uganda,0.3476,32.5825
+OCC Nodes,62,90,Ghana,5.6037,0.187
+CIS Server,55,13,South Africa,25.7469,28.1881

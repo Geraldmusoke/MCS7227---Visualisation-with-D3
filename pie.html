@@ -1,0 +1,110 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pie Chart with D3.js</title>
+    <script src="d3_lib/d3.v7.min.js"></script>
+    <style>
+        body{
+            background-color: #191A19;
+        }
+        table.desc{
+            font-family: sans-serif;
+            font-size: 14px;
+            border: 2px solid #2ca02c;
+            padding: 0;
+            width: 200px;
+            border-radius:5px;
+        }
+        table.desc th{
+            background-color: #000;
+            color: #7EE05F;
+            padding: 2px;
+        }
+        table.desc td{
+            background-color: #191A19;
+            color: #FEFAAE;
+            padding: 2px;
+        }
+    </style>
+</head>
+<body>
+<script>
+
+    // Set up the SVG canvas dimensions
+    const width = 400;
+    const height = 300;
+    const radius = Math.min(width, height) / 2;
+
+    // Append SVG canvas to the body
+    const svg = d3.select("body")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .append("g")
+        .attr("transform", `translate(${width / 2},${height / 2})`);
+
+    // Load CSV data
+    d3.csv("data.csv").then(data => {
+        // Parse integer data
+        data.forEach(d => {
+            d.Number_of_nodes = +d.Number_of_nodes;
+        });
+
+        // Group data by Operating_Country
+        const dataByCountry = d3.group(data, d => d.Operating_Country);
+
+        // Sum up the number of nodes for each country
+        const nodesByCountry = Array.from(dataByCountry, ([key, value]) => ({
+            country: key,
+            nodes: d3.sum(value, d => d.Number_of_nodes)
+        }));
+
+        // Create pie chart
+        const pie = d3.pie()
+            .value(d => d.nodes);
+
+        // Generate pie chart arcs
+        const arcs = pie(nodesByCountry);
+
+        // Create arc generator
+        const arcGenerator = d3.arc()
+            .innerRadius(40)
+            .outerRadius(radius);
+
+        // Append arcs to the SVG canvas
+        svg.selectAll("path")
+            .data(arcs)
+            .enter()
+            .append("path")
+            .attr("d", arcGenerator)
+            .attr("fill", (d, i) => d3.schemeCategory10[i % 10]);
+
+        // Add labels to the pie chart
+        svg.selectAll("text")
+            .data(arcs)
+            .enter()
+            .append("text")
+            .attr("transform", d => `translate(${arcGenerator.centroid(d)})`)
+            .attr("text-anchor", "middle")
+            .style("font-family","sans-serif")
+            .style("font-size", "14px")
+            .style("font-weight", "bold")
+            .text(d => `${d.data.nodes} `);
+        //`${d.data.country}:
+
+    }).catch(error => {
+        console.error("Error loading the data: ", error);
+
+    });
+</script>
+<div style="float: right">
+    <table  class="desc">
+        <tr><th>Pie chart</th></tr>
+        <tr><td>Shows number of servers/nodes per MTN Operating country (OPCO)</td></tr>
+    </table>
+</div>
+</body>
+</html>

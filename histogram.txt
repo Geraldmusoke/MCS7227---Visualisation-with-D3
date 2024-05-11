@@ -1,0 +1,76 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histogram with D3.js</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+<script>
+    // Set up the SVG canvas dimensions
+    const width = 800;
+    const height = 600;
+    const margin = { top: 50, right: 50, bottom: 50, left: 50 };
+    const innerWidth = width - margin.left - margin.right;
+    const innerHeight = height - margin.top - margin.bottom;
+
+    // Append SVG canvas to the body
+    const svg = d3.select("body")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    // Load CSV data
+    d3.csv("data.csv").then(data => {
+        // Parse integer data
+        data.forEach(d => {
+            d.Storage = +d.Storage;
+            d.Number_of_nodes = +d.Number_of_nodes;
+        });
+
+        // Title for the histogram
+        svg.append("text")
+            .attr("x", innerWidth / 2)
+            .attr("y", -margin.top / 2)
+            .attr("text-anchor", "middle")
+            .style("font-size", "16px")
+            .text("NUMBER OF NODES AND STORAGE DISTRIBUTION");
+
+        // Create scales for x and y axes
+        const xScale = d3.scaleLinear()
+            .domain([0, d3.max(data, d => d.Storage)])
+            .range([0, innerWidth]);
+
+        const yScale = d3.scaleLinear()
+            .domain([0, d3.max(data, d => d.Number_of_nodes)])
+            .range([innerHeight, 0]);
+
+        // Create x-axis
+        svg.append("g")
+            .attr("transform", `translate(0,${innerHeight})`)
+            .call(d3.axisBottom(xScale));
+
+        // Create y-axis
+        svg.append("g")
+            .call(d3.axisLeft(yScale));
+
+        // Create histogram bars
+        svg.selectAll(".bar")
+            .data(data)
+            .enter().append("rect")
+            .attr("class", "bar")
+            .attr("x", 0)
+            .attr("y", d => yScale(d.Number_of_nodes))
+            .attr("width", d => xScale(d.Storage))
+            .attr("height", d => innerHeight - yScale(d.Number_of_nodes))
+            .attr("fill", "steelblue");
+    }).catch(error => {
+        console.error("Error loading the data: ", error);
+    });
+</script>
+</body>
+</html>
